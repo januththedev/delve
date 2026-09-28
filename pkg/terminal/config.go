@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"slices"
 	"strings"
 	"text/tabwriter"
 
@@ -128,13 +129,7 @@ func configureSetAlias(t *Term, rest string) error {
 	switch len(argv) {
 	case 1: // delete alias rule
 		for k := range t.conf.Aliases {
-			v := t.conf.Aliases[k]
-			for i := range v {
-				if v[i] == argv[0] {
-					copy(v[i:], v[i+1:])
-					t.conf.Aliases[k] = v[:len(v)-1]
-				}
-			}
+			t.conf.Aliases[k] = slices.DeleteFunc(t.conf.Aliases[k], func(alias string) bool { return alias == argv[0] })
 		}
 	case 2: // add alias rule
 		alias, cmd := argv[1], argv[0]
